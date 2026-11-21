@@ -1,0 +1,4 @@
+interface:
+  display_name: "文创大师"
+  short_description: "图片到可打印文创：Tripo 生成外观，Blender 代码构建功能结构，简单形体直接建模"
+  default_prompt: "使用 $wenchuang-master，把这张图做成可打印文创。请先和我确认图里的主体，以及我想保留哪些特征，再继续下一步。"

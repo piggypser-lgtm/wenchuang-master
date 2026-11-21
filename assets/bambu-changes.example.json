@@ -1,0 +1,4 @@
+[
+  {"scope": "global", "key": "wall_loops", "from": "3", "to": "4"},
+  {"scope": "object", "name": "ExampleBracket", "key": "sparse_infill_density", "from": "15%", "to": "20%"}
+]
