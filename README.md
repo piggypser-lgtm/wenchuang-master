@@ -6,7 +6,7 @@
 
 把照片、插画、图案或设计稿，通过和 AI 一步步共创，变成手机支架、笔筒、钥匙扣、解压玩具等可以 3D 打印的实用文创。
 
-![version](https://img.shields.io/badge/version-1.4.0-blue)
+![version](https://img.shields.io/badge/version-1.4.1-blue)
 ![license](https://img.shields.io/badge/license-MIT-green)
 ![python](https://img.shields.io/badge/python-3.10%2B-yellow)
 ![skill](https://img.shields.io/badge/AI%20Skill-SKILL.md-purple)
@@ -53,7 +53,7 @@ flowchart LR
 
 ### 1. 安装
 
-[下载文创大师 v1.4.0 安装包](https://github.com/piggypser-lgtm/wenchuang-master/releases/download/v1.4.0/wenchuang-master-v1.4.0.zip)。如果你拿到的是图文包，先解压图文包，找到里面这份安装 ZIP。
+[下载文创大师 v1.4.1 安装包](https://github.com/piggypser-lgtm/wenchuang-master/releases/download/v1.4.1/wenchuang-master-v1.4.1.zip)。如果你拿到的是图文包，先解压图文包，找到里面这份安装 ZIP。
 
 **Codex 和 Claude Code（本地安装）**
 
@@ -142,7 +142,7 @@ AI 只在需要时读取对应的参考小节，不会一次把所有资料都�
 | `preview` | 生成只供查看的预览副本 |
 | `open` / `review` | 打开工程；查阅切片告警 |
 
-> **Windows 版 Bambu Studio 02.08.02.61 和 02.09.01.70 都已实际切出 G-code。** 遇到新的软件或工程版本，AI 会先在副本上试切，核对盘号、参数和实际打印路径。遇到版本差异，由 AI 调整命令或改用 Bambu Studio 界面完成切片。你确认切片预览后，再单独决定是否发送打印。详见[适配器说明](references/bambu-adapter.md)。
+> **Windows 版 Bambu Studio 02.08.02.61 和 02.09.01.70 都已实际切出 G-code。** 打开已有 3MF 工程前，AI 先在后台运行包内适配器的 `inspect`。适配器支持的操作都直接用它完成。你确认摆盘与参数后，由它调用 Bambu Studio 离线切片；新版本先用副本验证。若某一步受限，先找后台办法。确实需要接管鼠标键盘时，AI 会说明原因和预计占用时间，征得你同意后只处理这一步，再用适配器复核产物。你确认切片预览后，再单独决定是否发送打印。详见[适配器说明](references/bambu-adapter.md)。
 
 ---
 
@@ -158,7 +158,7 @@ python -X utf8 scripts/check_package.py
 python -X utf8 -m unittest discover -s scripts/tests -v
 
 # 打包（默认不覆盖已有文件，需要覆盖时加 --overwrite）
-python -X utf8 scripts/check_package.py --zip ../wenchuang-master-v1.4.0.zip
+python -X utf8 scripts/check_package.py --zip ../wenchuang-master-v1.4.1.zip
 ```
 
 结构检查通过不代表流程行为正确或模型一定能打印。

@@ -52,10 +52,14 @@
 
 ### 6. 分盘、切片与交付
 
+**包内适配器支持的操作一律直接执行。** 有 3MF，先用[适配器](references/bambu-adapter.md#在用户项目运行命令)实际执行 `inspect --input "<本轮文件.3mf>"`，核对 `file_role`、盘号和版本。禁止用自写脚本、裸 CLI 或 Computer Use 替代受支持操作。只有模型时，先确认打印方案，建立并保存可编辑工程，再运行 `inspect`。纯切片包可预览，修改参数或重切须找回对应的可编辑工程。
+
+仅对[缺少能力或有证据失败的单步](references/slicing-automation.md#单步回退与返回适配器)换入口，先选免占桌面的方式。确需 Computer Use 接管鼠标键盘，先说明卡在哪一步、原因、预计占用多久、可用的免占用替代方式，取得本轮对应授权再操作。结束即交还桌面，后续支持步骤继续用适配器。
+
 1. **打印方案。** 逐件确认[本轮范围、朝向、分盘和支撑](references/slicing-parameters.md#按部件决定朝向分盘参数和支撑)。默认多盘共用一个可编辑 3MF，沿用已有盘号与摆放。用户要求或已确认配置无法共存时，才分工程并注明盘号。
-2. **摆盘和参数。** 在副本中[准备参数](references/slicing-automation.md#2-工程与参数准备此阶段不切片)，使用适配器时查 [prepare](references/bambu-adapter.md#准备参数变更)。作为工程打开，展示实际生效配置，单独验收。
-3. **执行切片。** 在 Bambu Studio 仅切已验收配置的[目标盘](references/slicing-automation.md#4-配置验收后的程序化切片与预览)。遇到版本差异，由 Agent 在工程副本试切并核验，按需适配命令或接管 Bambu Studio 界面。操作见 [slice](references/bambu-adapter.md#对已选盘执行切片)。记录软件和工程版本、盘号和输出。出现[弹窗](references/bambu.md#弹窗警告与自动处理)时按提示处理。参数改变后重切受影响盘。
-4. **交付和预览。** 每盘[先列可编辑 3MF 及盘号，再列对应的 G-code](references/bambu.md#每盘切片文件交付)。说明前者用于回「准备」页改耗材和参数，后者用于查看路径及确认后打印。多盘工程仅切一盘时查[已有路径预览](references/bambu-adapter.md#打开已有路径预览)。实际[检查逐层路径、首层和风险部位](references/bambu.md#切片检查)，展示预计用时、用料及告警结论，请用户验收。
+2. **摆盘和参数。** 已支持的字段用 [prepare](references/bambu-adapter.md#准备参数变更) 在副本中修改。用 `open --mode project` 打开需核验的工程，检查实际载入的摆盘和参数，按[回读条件](references/bambu-adapter.md#打开工程与回读)核对差异，请用户单独验收。
+3. **执行切片。** 配置获接受后，直接用适配器 [slice](references/bambu-adapter.md#对已选盘执行切片) 调用本机 Bambu Studio，只切获准的盘。相同条件已有失败证据时，沿用该步回退记录。遇到[弹窗](references/bambu.md#弹窗警告与自动处理)按提示处理。
+4. **交付和预览。** 复用 `slice` 的核验报告；界面或外部脚本生成 3MF 后，回到适配器 [inspect / compare](references/bambu-adapter.md#处理切片差异) 核对产物和已接受配置。每盘[先列可编辑工程及盘号，再列对应的 G-code](references/bambu.md#每盘切片文件交付)。说明前者可回「准备」页改参数，后者用于查看路径及确认后打印。按需打开[已有路径](references/bambu-adapter.md#打开已有路径预览)，[实际检查逐层路径、首层及风险部位](references/bambu.md#切片检查)，展示用时、用料和告警，请用户验收。参数改变后重切受影响盘。
 
 ### 7. 发送打印与实物反馈
 

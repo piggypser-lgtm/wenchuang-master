@@ -26,6 +26,15 @@ class FeasibilityReadTests(unittest.TestCase):
         self.assertTrue(data.isascii())
         self.assertEqual(data.decode("cp936"), data.decode("utf-8"))
 
+    def test_slicing_handoff_exposes_inspect_before_desktop_fallback(self):
+        entry = (read_stage.SOURCE.parent / "SKILL.md").read_text(encoding="utf-8")
+        stage = read_stage.read_section(read_stage.SOURCE, read_stage.STAGES["6"])
+        self.assertIn("scripts/bambu_project.py inspect --input", entry)
+        self.assertIn("references/bambu-adapter.md#", stage)
+        self.assertIn("inspect --input", stage)
+        self.assertIn("references/slicing-automation.md#", stage)
+        self.assertLess(stage.index("inspect --input"), stage.index("references/slicing-automation.md#"))
+
     def test_all_stage_commands_return_only_the_current_section(self):
         document = read_stage.SOURCE.read_text(encoding="utf-8-sig")
         env = dict(os.environ, PYTHONIOENCODING="cp936")

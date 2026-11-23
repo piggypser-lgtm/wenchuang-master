@@ -2,7 +2,7 @@
 name: wenchuang-master
 license: MIT
 metadata:
-  version: "1.4.0"
+  version: "1.4.1"
 description: "\u628a\u7167\u7247\u3001\u63d2\u753b\u3001\u56fe\u6848\u6216\u8bbe\u8ba1\u56fe\u505a\u6210\u53ef 3D \u6253\u5370\u7684\u6587\u521b\uff0c\u5982\u94a5\u5319\u6263\u3001\u624b\u673a\u652f\u67b6\u6216\u4e92\u52a8\u73a9\u5177\u3002\u4e5f\u53ef\u63a5\u7eed\u5df2\u6709\u8bbe\u8ba1\u3001\u6a21\u578b\u6216\u6253\u5370\u5de5\u7a0b\u3002"
 ---
 
@@ -27,7 +27,7 @@ Resume at the last accepted deliverable. For the current stage, run `python -B s
 3. Main view, other views and dimension drawings
 4. Modeling, fit samples and refinement
 5. Split approved color regions and export
-6. Plate layout, slicing and file delivery
+6. Plate layout, slicing and file delivery. For Bambu Studio, use the bundled `scripts/bambu_project.py` for every supported step. With a 3MF, first run `python -B scripts/bambu_project.py inspect --input "<actual.3mf>"` from the skill directory. After configuration approval, run `slice` for approved plates. Do not substitute your own script, raw CLI or desktop clicks. Follow Stage 6 for model-only input or a blocked step. Explain the reason, expected desktop use and alternatives, and obtain scoped consent before taking over the mouse or keyboard.
 7. Send to print and review the physical result
 
 Read only the relevant stage and the linked subsection needed for the current decision. If Python is unavailable, use a UTF-8-capable reader for that section. Reuse complete text already in context. For details of confirmation or project handoff, use `rules` in place of `N`.

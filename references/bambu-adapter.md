@@ -1,18 +1,18 @@
 # Bambu 项目适配工具
 
-在已选定代码配置路线时读取。入口是 [bambu_project.py](../scripts/bambu_project.py)，只使用 Python 3.10+ 标准库；不需要为它安装 Trimesh 或 CadQuery。它不提供设备发现、账户连接或发送打印，不自动操作 GUI 控件，也不替代 [切片阶段验收](bambu.md)。
+Bambu Studio 工程准备、离线切片和产物核验直接用包内 [bambu_project.py](../scripts/bambu_project.py)。依赖 Python 3.10+ 标准库。`open` 可启动软件，适配器不接管桌面或发送打印。因个别步骤需鼠标键盘而转用 Computer Use 时，先取得[对应范围的接管同意](slicing-automation.md#单步回退与返回适配器)。[逐项验收](bambu.md#成果验收与阶段交接)和原生预览仍须完成。
 
 ## 在用户项目运行命令
 
-从存放本轮工程的用户项目目录打开终端。下面以 PowerShell 和 Codex 用户级安装为例，先运行一次：
+从存放本轮工程的用户项目目录执行。例如在 PowerShell 中定位本次使用的技能，然后用实际文件替换 `source.3mf`：
 
 ~~~powershell
 $skillDir = Join-Path $HOME '.agents/skills/wenchuang-master'
 $adapter = (Resolve-Path -LiteralPath (Join-Path $skillDir 'scripts/bambu_project.py') -ErrorAction Stop).Path
-python -B "$adapter" --help
+python -B "$adapter" inspect --input "source.3mf" --report "inspect.json"
 ~~~
 
-若是仓库级安装或自选位置，将第一行的目录改为本次实际使用的技能文件夹。其他终端可以直接把下方命令中的 "$adapter" 换成加引号的脚本绝对路径。下文的 source.3mf、inspect.json 和各运行目录都相对于当前用户项目。把工程副本放在这里，按实际文件名和获准的盘号执行对应步骤。
+将 `$skillDir` 指向本次实际使用的技能目录。其他终端可用加引号的脚本绝对路径替换 `$adapter`。命令在用户项目内运行；工程、报告、运行目录和盘号须换成本轮实际值。报告写入新文件。
 
 ## 能力与适用范围
 
@@ -26,7 +26,7 @@ python -B "$adapter" --help
 | slice | 绑定已验收工程，按当前程序能力在新目录离线切指定盘并检查产物 | 可发送打印；无问题也只是待预览 |
 | preview | 从受支持的切片工程制作独立的仅供查看副本，验证 G-code 不变 | 正式发送包 |
 
-Windows 下，同一份 02.08.02.61 单盘工程已分别用 02.08.02.61 和 02.09.01.70 实际切出 G-code。02.09.01.70 为基准版本。其他版本或跨版本工程按兼容试切处理，助手核对本机能力，并在已确认工程的副本上验证目标盘。`prepare` 直接改写 3MF 和 `preview` 重组查看包仍只处理已核实的版本与结构；遇到新格式，由助手在当前 Bambu Studio 中设置、另存工程或查看路径，不伪造版本标识。[跨版本操作顺序](slicing-automation.md#1-先核实本机能力与版本)
+Windows 下，同一份 02.08.02.61 单盘工程已分别用 02.08.02.61 和 02.09.01.70 实际切出 G-code。02.09.01.70 为基准版本。其他版本或跨版本工程按兼容试切处理，助手核对本机能力，并在已确认工程的副本上验证目标盘。`prepare` 直接改写 3MF 和 `preview` 重组查看包仍只处理已核实的版本与结构；遇到新格式，由助手只对受阻步骤按[单步回退](slicing-automation.md#单步回退与返回适配器)处理，不伪造版本标识。[跨版本操作顺序](slicing-automation.md#1-先核实本机能力与版本)
 
 支持修改已存在且分组已核实的常用全局工艺／耗材／打印机参数、已识别项目字段和唯一对象级 metadata；支持范围由脚本字段表及实际版本验证限定，不因源文件有某字段就自动支持修改。对全局参数自动维护 different_settings_to_system（预设修改记录）：按“工艺、各耗材槽、打印机”合并实际变化键，保留原标记，多耗材只标记变化槽。缺标记且槽位可明确时允许补建，但必须做完整 GUI 另存回读；畸形分组、不能判定槽位或未知字段不猜测，回退原生设置。除这一经过核实的派生记录外，不支持新增任意字段、逐面绘制、修改器参数、换网格、重新分盘或自动定向。这些内容保留原样，超出范围使用原生工具。首次接入新结构、字段或特殊对象时先做隔离验证。
 
@@ -50,11 +50,7 @@ python -B "$adapter" review --input slice-plate-01/verification.json --issue 3
 
 ### 检查盘与零件
 
-先读取未切片的有效工程，输出完整清单。终端返回版本、校验值、盘号、几何检查范围和状态。详细参数保存在报告中。
-
-~~~text
-python -B "$adapter" inspect --input source.3mf --report inspect.json
-~~~
+现有 3MF 先用上面的 `inspect` 按内容判定 `file_role`，读取版本、校验值、盘号及几何检查范围；同一输入已有本轮清单时直接复用。单独的 STL 等模型先转成可编辑工程。`sliced_toolpath` 和 `preview_copy` 只能查看路径；改参数须回到对应的可编辑工程。
 
 ### 准备参数变更
 
@@ -92,13 +88,15 @@ python -B "$adapter" inspect --input gui-saved.3mf --report accepted-input.json
 python -B "$adapter" slice --bambu "<实际可执行文件>" --input gui-saved.3mf --accepted-sha256 "<该文件已核对的SHA256>" --plates 1 --run-dir slice-plate-01
 ~~~
 
-示例中的 1 应换成本轮实际盘号。--plates 必填；all 表示明确选择全部盘，其他值为单个现存盘号。逐盘交付 G-code 时，各次调用使用同一份已验收工程作为输入，指定一个目标盘号和一个新的运行目录；这些目录保存各盘的运行产物。使用 all 时须已确认本轮需要全部盘。若实际输出只有一个多盘包，通过已验证的 Bambu Studio 原生入口逐盘导出并核对正式 G-code，或用同一工程按所需盘号分别切片。--accepted-sha256 是调用者关于已接受版本的声明，只绑定文件内容，不能证明用户实际确认；助手不得自动计算后填入来跳过验收。开发验证使用已授权的隔离测试范围，不能生成虚假的产品验收记录。
+示例中的 1 应换成本轮实际盘号。--plates 必填；all 表示明确选择全部盘，其他值为单个现存盘号。逐盘交付 G-code 时，各次调用使用同一份已验收工程作为输入，指定一个目标盘号和一个新的运行目录；这些目录保存各盘的运行产物。使用 all 时须已确认本轮需要全部盘。若实际输出只有一个多盘包，用同一工程按需逐盘调用适配器；若只能从原生界面逐盘导出，按[单步回退](slicing-automation.md#单步回退与返回适配器)处理并核对正式 G-code。--accepted-sha256 是调用者关于已接受版本的声明，只绑定文件内容，不能证明用户实际确认；助手不得自动计算后填入来跳过验收。开发验证使用已授权的隔离测试范围，不能生成虚假的产品验收记录。
 
 每次 run-dir 必须全新，已有空目录也拒绝。工具不自动摆盘／定向，临时目录、stdout、stderr、输入快照、run.json、verification.json 和实际输出保留在本次目录。--timeout 默认 600 秒；超时记录 PID 和可能仍运行状态，不自动重试或终止其他 Bambu 实例。先核对该进程及已有产物，再决定后续操作；已存在的运行目录不重用。
 
 ### 处理切片差异
 
-切片生成后按[摘要定位规则](#按摘要定位明细)读取本轮涉及的 issues／observations；完整差异保留，不能把 needs_review 理解成自动重切指令。verification_schema=2 在每条记录中增加 category、affected_stages、recommended_action，并明确 automatic_reslice=false。原退出保护保持：有 issue 仍需判读，未知警告或字节变化不自动降为无害。
+`slice` 已比较输入快照与输出，复用同次 `verification.json`。若 3MF 来自 GUI 或外部脚本，先用 `inspect` 识别新产物，再用 `compare --before "<已验收工程.3mf>" --after "<实际产物.3mf>"` 核对双方可取得的字段；需要留存明细时加 `--report` 和新的报告路径。退出码 3 表示发现差异，逐项判读。纯切片包不含可编辑几何，缺模型等角色差异不能证明参数漂移；核对可比参数、盘号与 G-code，缺失证据标未验证。裸 `.gcode` 不传给 3MF 命令，按盘核对其来源、路径和可取得的配置。
+
+对适配器生成的切片，按[摘要定位规则](#按摘要定位明细)读取 issues／observations。`needs_review` 表示需要判读。`verification_schema=2` 记录 category、affected_stages、recommended_action 及 `automatic_reslice=false`。保留原始差异与警告。
 
 | 分类 | 处理重点 |
 |---|---|
